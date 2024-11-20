@@ -31,14 +31,14 @@ public class AuthService {
             throw new InvalidRequestException("이미 존재하는 이메일입니다.");
         }
 
-        String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
+        String password = passwordEncoder.encode(signupRequest.getPassword());
 
         UserRole userRole = UserRole.of(signupRequest.getUserRole());
 
         User newUser = new User(
                 signupRequest.getEmail(),
                 signupRequest.getNickname(),
-                encodedPassword,
+                password,
                 userRole
         );
         User savedUser = userRepository.save(newUser);
