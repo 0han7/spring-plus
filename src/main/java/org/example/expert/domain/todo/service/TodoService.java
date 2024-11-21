@@ -14,9 +14,10 @@ import org.example.expert.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -49,14 +50,23 @@ public class TodoService {
         );
     }
 
-    public Page<TodoResponse> getTodos(int page, int size, String weather, String startDate, String endDate) {
-        Specification<Todo> spec = Specification.where(TodoSpecifications.hasWeather(weather))
-                .and(TodoSpecifications.modifiedAfter(startDate))
-                .and(TodoSpecifications.modifiedBefore(endDate));
+    public Page<TodoResponse> getTodos(
+            int page,
+            int size,
+            String weather,
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
+
+
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        Page<Todo> todos = todoRepository.findAllByOrderByModifiedAtDesc(spec,pageable);
+        Page<Todo> todos = todoRepository.findAllByOrderByModifiedAtWeatherORDate(
+                weather,
+                startDate,
+                endDate,
+                pageable);
 
         return todos.map(todo -> new TodoResponse(
                 todo.getId(),
