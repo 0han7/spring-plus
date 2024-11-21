@@ -8,26 +8,32 @@ import org.example.expert.domain.user.entity.QUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalLong;
 
 @Repository
 @RequiredArgsConstructor
-public class TodoRepositoryCustomImpl implements TodoRepositoryCustom{
+public class TodoRepositoryCustomImpl implements TodoRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
 
     @Override
-    public Page<Todo> findAllByOrderByModifiedAtDesc(Specification<Todo> spec, Pageable pageable) {
+    public Page<Todo> findAllByOrderByModifiedAtWeatherORDate(
+            @Param("weater") String weather,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            Pageable pageable
+    ) {
         QTodo todo = QTodo.todo;
 
         List<Todo> todos = queryFactory
                 .select(todo)
+                .where(todo.weather.eq(weather))
                 .orderBy(todo.modifiedAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
